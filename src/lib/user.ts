@@ -6,14 +6,32 @@ export const LANGUAGES = ["ENGLISH", "RUSSIAN"] as const
 
 export type Language = typeof LANGUAGES[number]
 
+export const TIMEZONES = [
+  "America/New_York",
+  "Asia/Almaty",
+  "Asia/Dubai",
+  "Asia/Tashkent",
+  "Europe/London",
+  "Europe/Moscow",
+] as const
+
+export type Timezone = typeof TIMEZONES[number]
+
 export interface User {
   id: number
   created_at: string
   language: Language
+  timezone: Timezone
+  data: {
+    isLanguageSetup: boolean
+    isTimezoneSetup: boolean
+  }
 }
 
 const cache = new Map<number, User>()
 
+// Search for user data in cache, if not found,
+// get user from the database.
 export async function getUser(id: number) {
   if (cache.has(id)) {
     return cache.get(id)!
@@ -22,9 +40,11 @@ export async function getUser(id: number) {
   const { data, error } = await supabase
     .from<User>(USERS_TABLE)
     .select("*")
+    .eq("id", id)
     .single()
 
   if (error) {
+    console.error(error)
     throw error
   }
 
@@ -42,6 +62,7 @@ export async function createUser(data: User) {
     .single()
 
   if (error) {
+    console.error(error)
     throw error
   }
 
@@ -59,6 +80,7 @@ export async function updateUser(id: number, data: Partial<Omit<User, "id">>) {
     .eq("id", id)
 
   if (error) {
+    console.error(error)
     throw error
   }
 
