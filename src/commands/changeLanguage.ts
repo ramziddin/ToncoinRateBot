@@ -5,6 +5,7 @@ import TelegramBot, {
 } from "node-telegram-bot-api"
 import { getUser } from "../lib/user"
 import { wrapWithBullets } from "../lib/wrapString"
+import t from "./t"
 
 export default async function changeLanguage({
   bot,
@@ -19,7 +20,9 @@ export default async function changeLanguage({
 }) {
   const user = await getUser(msg.chat.id)
 
-  const text = "Choose language.\nВыберите язык."
+  if (!user) return
+
+  const text = t("chooseYourLanguage", user.language)
 
   const engBtnTxt =
     hideBackButton || user?.language !== "ENGLISH"
@@ -36,15 +39,13 @@ export default async function changeLanguage({
       ? "Русский"
       : wrapWithBullets("Русский")
 
-  console.log(user)
-
   const rusBtn: InlineKeyboardButton = {
     text: rusBtnTxt,
     callback_data: "language:RUSSIAN",
   }
 
   const backButton: InlineKeyboardButton = {
-    text: "← Назад",
+    text: `← ${t("back", user.language)}`,
     callback_data: "settings",
   }
 

@@ -123,7 +123,8 @@ bot.on("callback_query", async (query) => {
 
         if (user.data.isTimezoneSetup) {
           await bot.answerCallbackQuery(query.id, { text: "Язык изменён" })
-          await start({ bot, msg, query })
+          await bot.deleteMessage(msg.chat.id, msg.message_id.toString())
+          await start({ bot, msg })
         } else {
           await changeTimezone({ bot, msg, query, hideBackButton: true })
         }

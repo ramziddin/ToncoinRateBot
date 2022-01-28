@@ -1,0 +1,18 @@
+{
+  "24hMax": "24-часовой максимум",
+  "24hMin": "24-часовой минимум",
+  "back": "Назад",
+  "buyToncoin": "Купить Toncoin",
+  "chooseYourLanguage": "Выберите свой язык",
+  "chooseYourTimezone": "Выберите свой часовой пояс",
+  "currentRate": "Текущий курс",
+  "language": "Язык",
+  "languageChanged": "Язык изменен",
+  "rateOn": "Курс на",
+  "settings": "Настройки",
+  "timezoneChanged": "Часовой пояс изменен",
+  "update": "Обновить",
+  "updated": "Обновлено",
+  "updatedToCurrentRate": "Обновлено на текущий курс",
+  "updatedAt": "Обновлено"
+}

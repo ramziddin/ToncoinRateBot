@@ -3,6 +3,8 @@ import TelegramBot, {
   InlineKeyboardMarkup,
   ParseMode,
 } from "node-telegram-bot-api"
+import { getUser } from "../lib/user"
+import t from "./t"
 
 export default async function settings({
   bot,
@@ -13,32 +15,34 @@ export default async function settings({
   msg: TelegramBot.Message
   query?: TelegramBot.CallbackQuery
 }) {
-  if (msg.from) {
-    const text = "Настройки"
+  const user = await getUser(msg.chat.id)
 
-    const languageButton: InlineKeyboardButton = {
-      text: "Язык",
-      callback_data: "language",
-    }
+  if (!user) return
 
-    const reply_markup: InlineKeyboardMarkup = {
-      inline_keyboard: [[languageButton]],
-    }
+  const text = t("settings", user.language)
 
-    const parse_mode: ParseMode = "HTML"
+  const languageButton: InlineKeyboardButton = {
+    text: t("language", user.language),
+    callback_data: "language",
+  }
 
-    if (query) {
-      await bot.editMessageText(text, {
-        chat_id: msg.chat.id,
-        message_id: msg.message_id,
-        reply_markup,
-        parse_mode,
-      })
-    } else {
-      await bot.sendMessage(msg.from.id, text, {
-        parse_mode,
-        reply_markup,
-      })
-    }
+  const reply_markup: InlineKeyboardMarkup = {
+    inline_keyboard: [[languageButton]],
+  }
+
+  const parse_mode: ParseMode = "HTML"
+
+  if (query) {
+    await bot.editMessageText(text, {
+      chat_id: msg.chat.id,
+      message_id: msg.message_id,
+      reply_markup,
+      parse_mode,
+    })
+  } else {
+    await bot.sendMessage(msg.chat.id, text, {
+      parse_mode,
+      reply_markup,
+    })
   }
 }

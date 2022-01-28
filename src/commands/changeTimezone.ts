@@ -5,6 +5,7 @@ import TelegramBot, {
 } from "node-telegram-bot-api"
 import { getUser, TIMEZONES } from "../lib/user"
 import { wrapWithBullets } from "../lib/wrapString"
+import t from "./t"
 
 function arrayToChunks<T>(array: T[], chunkSize: number): T[][] {
   const chunks: T[][] = []
@@ -29,6 +30,8 @@ export default async function changeTimezone({
 }) {
   const user = await getUser(msg.chat.id)
 
+  if (!user) return
+
   const text = "Выберите свой часовой пояс."
 
   const buttons = arrayToChunks(
@@ -49,7 +52,7 @@ export default async function changeTimezone({
   )
 
   const backButton: InlineKeyboardButton = {
-    text: "← Назад",
+    text: `← ${t("back", user.language)}`,
     callback_data: "settings",
   }
 

@@ -32,7 +32,7 @@ export default async function createCoinHistoryChart(
 ): Promise<string> {
   const filePath = `${TMP_DIRECTORY}/${coinId}-${currency}-${days}.png`
 
-  if (existsSync(filePath)) return filePath
+  // if (existsSync(filePath)) return filePath
 
   if (!existsSync(TMP_DIRECTORY)) await mkdir(TMP_DIRECTORY)
 
@@ -49,9 +49,9 @@ export default async function createCoinHistoryChart(
     options: {
       layout: {
         padding: {
-          top: 0,
-          left: 0,
-          right: 30,
+          top: 60,
+          left: 10,
+          right: 40,
           bottom: 30,
         },
       },

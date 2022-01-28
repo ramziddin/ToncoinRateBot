@@ -1,0 +1,18 @@
+{
+  "24hMax": "24h max",
+  "24hMin": "24h min",
+  "back": "Back",
+  "buyToncoin": "Buy Toncoin",
+  "chooseYourLanguage": "Choose your language",
+  "chooseYourTimezone": "Choose your timezone",
+  "currentRate": "Current rate",
+  "language": "Language",
+  "languageChanged": "Language changed",
+  "rateOn": "Rate on",
+  "settings": "Settings",
+  "timezoneChanged": "Timezone changed",
+  "update": "Update",
+  "updated": "Updated",
+  "updatedToCurrentRate": "Updated to current rate",
+  "updatedAt": "Updated at"
+}
