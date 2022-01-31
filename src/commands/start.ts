@@ -12,7 +12,7 @@ import createCoinHistoryChart from "../lib/createCoinHistoryChart"
 import getCoinData from "../lib/getCoinData"
 import { getUser } from "../lib/user"
 import { wrapHtmlBold } from "../lib/wrapString"
-import t from "./t"
+import t from "../lib/t"
 
 export default async function start({
   bot,

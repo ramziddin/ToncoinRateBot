@@ -4,7 +4,7 @@ import TelegramBot, {
   ParseMode,
 } from "node-telegram-bot-api"
 import { getUser } from "../lib/user"
-import t from "./t"
+import t from "../lib/t"
 
 export default async function settings({
   bot,
@@ -26,8 +26,13 @@ export default async function settings({
     callback_data: "language",
   }
 
+  const timezoneButton: InlineKeyboardButton = {
+    text: t("timezone", user.language),
+    callback_data: "timezone",
+  }
+
   const reply_markup: InlineKeyboardMarkup = {
-    inline_keyboard: [[languageButton]],
+    inline_keyboard: [[languageButton, timezoneButton]],
   }
 
   const parse_mode: ParseMode = "HTML"

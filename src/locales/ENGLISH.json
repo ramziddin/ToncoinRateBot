@@ -14,5 +14,6 @@
   "update": "Update",
   "updated": "Updated",
   "updatedToCurrentRate": "Updated to current rate",
-  "updatedAt": "Updated at"
+  "updatedAt": "Updated at",
+  "timezone": "Timezone"
 }

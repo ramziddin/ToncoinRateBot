@@ -14,5 +14,6 @@
   "update": "Обновить",
   "updated": "Обновлено",
   "updatedToCurrentRate": "Обновлено на текущий курс",
-  "updatedAt": "Обновлено"
+  "updatedAt": "Обновлено",
+  "timezone": "Часовой пояс"
 }

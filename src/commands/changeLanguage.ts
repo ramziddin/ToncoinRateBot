@@ -5,7 +5,7 @@ import TelegramBot, {
 } from "node-telegram-bot-api"
 import { getUser } from "../lib/user"
 import { wrapWithBullets } from "../lib/wrapString"
-import t from "./t"
+import t from "../lib/t"
 
 export default async function changeLanguage({
   bot,

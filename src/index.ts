@@ -4,6 +4,7 @@ import changeLanguage from "./commands/changeLanguage"
 import changeTimezone from "./commands/changeTimezone"
 import settings from "./commands/settings"
 import start from "./commands/start"
+import t from "./lib/t"
 import {
   createUser,
   getUser,
@@ -88,71 +89,74 @@ bot.on("callback_query", async (query) => {
 
   // Check if there's data and message available.
   // https://core.telegram.org/bots/api#callbackquery
-  if (data && msg) {
-    if (data === "main") {
-      await start({ bot, msg, query })
-      await bot.answerCallbackQuery(query.id)
-    }
+  if (!data || !msg) return
 
-    if (data === "update") {
-      await start({ bot, msg, query, updated: true })
+  if (data === "main") {
+    await start({ bot, msg, query })
+    await bot.answerCallbackQuery(query.id)
+  } else if (data === "update") {
+    const user = await getUser(query.from.id)
+
+    if (!user) return
+
+    await start({ bot, msg, query, updated: true })
+
+    await bot.answerCallbackQuery(query.id, {
+      text: t("updatedToCurrentRate", user.language),
+    })
+  } else if (data === "settings") {
+    await settings({ bot, msg, query })
+    await bot.answerCallbackQuery(query.id)
+  } else if (data === "language") {
+    await changeLanguage({ bot, msg, query })
+    await bot.answerCallbackQuery(query.id)
+  } else if (data.startsWith("language:")) {
+    const language = data.split(":")[1].toUpperCase() as Language
+    const user = await getUser(query.from.id)
+
+    if (!language || !user) return
+
+    await updateUser(query.from.id, {
+      language,
+      data: { ...user.data, isLanguageSetup: true },
+    })
+
+    if (user.data.isTimezoneSetup) {
       await bot.answerCallbackQuery(query.id, {
-        text: "Обновлено на текущий курс",
+        text: t("languageChanged", user.language),
       })
+
+      await bot.deleteMessage(msg.chat.id, msg.message_id.toString())
+
+      await start({ bot, msg })
+    } else {
+      await changeTimezone({ bot, msg, query, hideBackButton: true })
+    }
+  } else if (data === "timezone") {
+    await changeTimezone({ bot, msg, query })
+    await bot.answerCallbackQuery(query.id)
+  } else if (data.startsWith("timezone:")) {
+    const timezone = data.split(":")[1] as Timezone
+    const user = await getUser(query.from.id)
+
+    if (!timezone || !user) return
+
+    await updateUser(query.from.id, {
+      timezone,
+      data: { ...user.data, isTimezoneSetup: true },
+    })
+
+    await bot.answerCallbackQuery(query.id, {
+      text: t("timezoneChanged", user.language),
+    })
+
+    if (query.message) {
+      await bot.deleteMessage(
+        query.message.chat.id,
+        query.message.message_id.toString()
+      )
     }
 
-    if (data === "settings") {
-      await settings({ bot, msg, query })
-      await bot.answerCallbackQuery(query.id)
-    }
-
-    if (data === "language") {
-      await changeLanguage({ bot, msg, query })
-      await bot.answerCallbackQuery(query.id)
-    }
-
-    if (data.startsWith("language:")) {
-      const language = data.split(":")[1].toUpperCase() as Language
-      const user = await getUser(query.from.id)
-
-      if (language && user) {
-        await updateUser(query.from.id, {
-          language,
-          data: { ...user.data, isLanguageSetup: true },
-        })
-
-        if (user.data.isTimezoneSetup) {
-          await bot.answerCallbackQuery(query.id, { text: "Язык изменён" })
-          await bot.deleteMessage(msg.chat.id, msg.message_id.toString())
-          await start({ bot, msg })
-        } else {
-          await changeTimezone({ bot, msg, query, hideBackButton: true })
-        }
-      }
-    }
-
-    if (data.startsWith("timezone:")) {
-      const timezone = data.split(":")[1] as Timezone
-      const user = await getUser(query.from.id)
-
-      if (timezone && user) {
-        await updateUser(query.from.id, {
-          timezone,
-          data: { ...user.data, isTimezoneSetup: true },
-        })
-
-        await bot.answerCallbackQuery(query.id, {
-          text: "Временная зона изменена",
-        })
-
-        if (query.message)
-          await bot.deleteMessage(
-            query.message.chat.id,
-            query.message.message_id.toString()
-          )
-
-        await start({ bot, msg })
-      }
-    }
+    await start({ bot, msg })
   }
 })
