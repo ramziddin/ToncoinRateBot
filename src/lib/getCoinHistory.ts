@@ -8,7 +8,7 @@ export const coinHistoryCache = new Map<string, CoinHistory>()
 export default async function getCoinHistory(
   coinId: string,
   currency: Currency,
-  days: 7 | 30 | 90
+  days: number
 ) {
   const key = `${coinId}-${currency}-${days}`
 

@@ -19,7 +19,7 @@ dotenv.config()
 const { BOT_TOKEN, NODE_ENV } = process.env
 
 if (!BOT_TOKEN || !NODE_ENV) {
-  throw new Error("Missing BOT_TOKEN or NODE_ENV")
+  throw new Error("Missing BOT_TOKEN or NODE_ENV environment variables")
 }
 
 const bot = new TelegramBot(BOT_TOKEN, {
@@ -43,42 +43,27 @@ bot.on("message", async (msg) => {
   // https://core.telegram.org/bots/api#message
   if (!msg.from) return
 
-  let user: User | null = null
+  const user = await getUser(msg.from.id)
 
-  try {
-    user = await getUser(msg.from.id)
-  } catch (error) {
-    console.error(error)
-  }
-
-  if (!user) {
-    // If the user doesn't exist, create user. The new user gets cached, so that
-    // the next call to getUser gets the cached data. The user gets created with
-    // a default language of ENGLISH.
+  if (!user && msg.from) {
     await createUser({
       id: msg.from.id,
-      created_at: new Date().toISOString(),
-      language: "ENGLISH",
-      timezone: "Europe/London",
-      data: {
-        isLanguageSetup: false,
-        isTimezoneSetup: false,
-      },
     })
 
-    // Let the user choose a language.
     await changeLanguage({ bot, msg, hideBackButton: true })
-  } else if (!user.data.isTimezoneSetup) {
+  } else if (user && !user.language) {
+    await changeLanguage({ bot, msg, hideBackButton: true })
+  } else if (user && !user.timezone) {
     await changeTimezone({ bot, msg, hideBackButton: true })
   } else {
-    if (msg.text) {
-      if (msg.text === "/start") {
-        await start({ bot, msg })
-      }
+    if (!msg.text) return
 
-      if (msg.text === "/settings") {
-        await settings({ bot, msg })
-      }
+    if (msg.text === "/start") {
+      await start({ bot, msg })
+    }
+
+    if (msg.text === "/settings") {
+      await settings({ bot, msg })
     }
   }
 })
@@ -94,7 +79,9 @@ bot.on("callback_query", async (query) => {
   if (data === "main") {
     await start({ bot, msg, query })
     await bot.answerCallbackQuery(query.id)
-  } else if (data === "update") {
+  }
+
+  if (data === "update") {
     const user = await getUser(query.from.id)
 
     if (!user) return
@@ -104,10 +91,14 @@ bot.on("callback_query", async (query) => {
     await bot.answerCallbackQuery(query.id, {
       text: t("updatedToCurrentRate", user.language),
     })
-  } else if (data === "settings") {
+  }
+
+  if (data === "settings") {
     await settings({ bot, msg, query })
     await bot.answerCallbackQuery(query.id)
-  } else if (data === "language") {
+  }
+
+  if (data === "language") {
     await changeLanguage({ bot, msg, query })
     await bot.answerCallbackQuery(query.id)
   } else if (data.startsWith("language:")) {
@@ -118,10 +109,9 @@ bot.on("callback_query", async (query) => {
 
     await updateUser(query.from.id, {
       language,
-      data: { ...user.data, isLanguageSetup: true },
     })
 
-    if (user.data.isTimezoneSetup) {
+    if (user.timezone) {
       await bot.answerCallbackQuery(query.id, {
         text: t("languageChanged", user.language),
       })
@@ -132,7 +122,9 @@ bot.on("callback_query", async (query) => {
     } else {
       await changeTimezone({ bot, msg, query, hideBackButton: true })
     }
-  } else if (data === "timezone") {
+  }
+
+  if (data === "timezone") {
     await changeTimezone({ bot, msg, query })
     await bot.answerCallbackQuery(query.id)
   } else if (data.startsWith("timezone:")) {
@@ -143,7 +135,6 @@ bot.on("callback_query", async (query) => {
 
     await updateUser(query.from.id, {
       timezone,
-      data: { ...user.data, isTimezoneSetup: true },
     })
 
     await bot.answerCallbackQuery(query.id, {

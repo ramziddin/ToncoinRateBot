@@ -63,6 +63,7 @@ export default async function createCoinHistoryChart(
               weight: "bold",
             },
             color: "white",
+            maxTicksLimit: days,
           },
         },
         y: {
@@ -72,6 +73,7 @@ export default async function createCoinHistoryChart(
               weight: "bold",
             },
             color: "white",
+            maxTicksLimit: days,
             padding: 20,
           },
         },

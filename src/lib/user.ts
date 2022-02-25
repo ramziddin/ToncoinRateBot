@@ -1,4 +1,6 @@
-import { supabase } from "./supabase"
+// import { supabase } from "./supabase"
+import { prisma } from "./prisma"
+import { Prisma } from "@prisma/client"
 
 export const USERS_TABLE = "users"
 
@@ -33,61 +35,67 @@ const cache = new Map<number, User>()
 // Search for user data in cache, if not found,
 // get user from the database.
 export async function getUser(id: number) {
-  if (cache.has(id)) {
-    return cache.get(id)!
-  }
+  return await prisma.user.findUnique({ where: { id } })
 
-  const { data, error } = await supabase
-    .from<User>(USERS_TABLE)
-    .select("*")
-    .eq("id", id)
-    .single()
+  // if (cache.has(id)) {
+  //   return cache.get(id)!
+  // }
 
-  if (error) {
-    console.error(error)
-    throw error
-  }
+  // const { data, error } = await supabase
+  //   .from<User>(USERS_TABLE)
+  //   .select("*")
+  //   .eq("id", id)
+  //   .single()
 
-  if (data) {
-    cache.set(id, data)
-  }
+  // if (error) {
+  //   console.error(error)
+  //   throw error
+  // }
 
-  return data
+  // if (data) {
+  //   cache.set(id, data)
+  // }
+
+  // return data
 }
 
-export async function createUser(data: User) {
-  const { data: result, error } = await supabase
-    .from<User>(USERS_TABLE)
-    .insert(data)
-    .single()
+export async function createUser(data: Prisma.UserCreateInput) {
+  return await prisma.user.create({ data })
 
-  if (error) {
-    console.error(error)
-    throw error
-  }
+  // const { data: result, error } = await supabase
+  //   .from<User>(USERS_TABLE)
+  //   .insert(data)
+  //   .single()
 
-  if (result) {
-    cache.set(data.id, result)
-  }
+  // if (error) {
+  //   console.error(error)
+  //   throw error
+  // }
 
-  return result
+  // if (result) {
+  //   cache.set(data.id, result)
+  // }
+
+  // return result
 }
 
-export async function updateUser(id: number, data: Partial<Omit<User, "id">>) {
-  const { data: result, error } = await supabase
-    .from<User>(USERS_TABLE)
-    .update(data)
-    .eq("id", id)
+export async function updateUser(id: number, data: Prisma.UserUpdateInput) {
+  return await prisma.user.update({ where: { id }, data })
 
-  if (error) {
-    console.error(error)
-    throw error
-  }
+  // const { data: result, error } = await supabase
+  //   .from<User>(USERS_TABLE)
+  //   .update(data)
+  //   .eq("id", id)
 
-  if (result) {
-    const user = cache.get(id)
-    cache.set(id, { ...user, ...data } as User)
-  }
+  // if (error) {
+  //   console.error(error)
+  //   throw error
+  // }
 
-  return result
+  // if (result) {
+  //   const user = cache.get(id)
+  //   cache.set(id, { ...user, ...data } as User)
+  // }
+
+  // return result
 }

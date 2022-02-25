@@ -22,7 +22,7 @@ export default async function changeLanguage({
 
   if (!user) return
 
-  const text = t("chooseYourLanguage", user.language)
+  const text = t("chooseYourLanguage", user.language || "ENGLISH")
 
   const engBtnTxt =
     hideBackButton || user?.language !== "ENGLISH"

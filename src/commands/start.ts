@@ -33,7 +33,7 @@ export default async function start({
 
   // Current date formatted as DD-MM-YYYY HH:MM
   const date = new Date().toLocaleString("ru", {
-    timeZone: user.timezone,
+    timeZone: user.timezone!,
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -60,7 +60,7 @@ export default async function start({
     wrapHtmlBold(
       updated ? t("updatedAt", user.language) : t("rateOn", user.language)
     ),
-    `${date} ${user.timezone}`,
+    `${date}\n${user.timezone?.replace(/_/g, " ")}`,
   ].join("\n")
 
   const text = [currentRate, max24h, min24h, rateDate].join("\n\n")
@@ -89,7 +89,7 @@ export default async function start({
       parse_mode,
     })
   } else {
-    const chart = await createCoinHistoryChart(TONCOIN_ID, Currency.USD, 30)
+    const chart = await createCoinHistoryChart(TONCOIN_ID, Currency.USD, 10)
 
     await bot.sendPhoto(msg.chat.id, chart, {
       caption: text,
