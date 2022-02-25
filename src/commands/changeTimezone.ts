@@ -52,7 +52,7 @@ export default async function changeTimezone({
   )
 
   const backButton: InlineKeyboardButton = {
-    text: `← ${t("back", user.language)}`,
+    text: t("back", user.language),
     callback_data: "settings",
   }
 
