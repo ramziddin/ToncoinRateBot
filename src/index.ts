@@ -32,14 +32,11 @@ if (NODE_ENV === "production" && !PORT) {
 if (NODE_ENV === "production") {
   bot.setWebHook(`${APP_URL}bot${BOT_TOKEN}`)
 
-  console.log(`${APP_URL}bot${BOT_TOKEN}`)
-
   const server = express()
 
   server.use(bodyParser.json())
 
   server.post("/bot" + BOT_TOKEN, async (req, res) => {
-    console.log(req.body)
     bot.processUpdate(req.body)
     await res.sendStatus(200)
   })
