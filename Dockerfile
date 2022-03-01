@@ -8,10 +8,10 @@ RUN apt-get -y install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev
 
 COPY package*.json .
 
-RUN npm install
-
 COPY . .
+
+RUN npm install
 
 RUN npm run build
 
-CMD [ "npm", "start" ]
+CMD [ "node", "build/index" ]

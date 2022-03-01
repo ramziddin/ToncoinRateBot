@@ -5,18 +5,13 @@ import changeTimezone from "./commands/changeTimezone"
 import settings from "./commands/settings"
 import start from "./commands/start"
 import t from "./lib/t"
-import {
-  createUser,
-  getUser,
-  Language,
-  Timezone,
-  updateUser,
-  User,
-} from "./lib/user"
+import { createUser, getUser, Language, Timezone, updateUser } from "./lib/user"
+import express from "express"
+import bodyParser from "body-parser"
 
 dotenv.config()
 
-const { BOT_TOKEN, NODE_ENV } = process.env
+const { BOT_TOKEN, NODE_ENV, APP_URL } = process.env
 
 if (!BOT_TOKEN || !NODE_ENV) {
   throw new Error("Missing BOT_TOKEN or NODE_ENV environment variables")
@@ -25,6 +20,23 @@ if (!BOT_TOKEN || !NODE_ENV) {
 const bot = new TelegramBot(BOT_TOKEN, {
   polling: NODE_ENV === "development",
 })
+
+if (NODE_ENV === "production" && !APP_URL) {
+  throw new Error("Missing APP_URL environment variable")
+}
+
+if (NODE_ENV === "production") {
+  bot.setWebHook(`${APP_URL}bot${BOT_TOKEN}`)
+
+  const server = express()
+
+  server.use(bodyParser.json())
+
+  server.post("/bot" + BOT_TOKEN, (req, res) => {
+    bot.processUpdate(req.body)
+    res.sendStatus(200)
+  })
+}
 
 bot.setMyCommands([
   {
