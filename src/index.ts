@@ -11,7 +11,7 @@ import bodyParser from "body-parser"
 
 dotenv.config()
 
-const { BOT_TOKEN, NODE_ENV, APP_URL } = process.env
+const { BOT_TOKEN, NODE_ENV, APP_URL, PORT } = process.env
 
 if (!BOT_TOKEN || !NODE_ENV) {
   throw new Error("Missing BOT_TOKEN or NODE_ENV environment variables")
@@ -25,16 +25,27 @@ if (NODE_ENV === "production" && !APP_URL) {
   throw new Error("Missing APP_URL environment variable")
 }
 
+if (NODE_ENV === "production" && !PORT) {
+  throw new Error("Missing PORT environment variable")
+}
+
 if (NODE_ENV === "production") {
   bot.setWebHook(`${APP_URL}bot${BOT_TOKEN}`)
+
+  console.log(`${APP_URL}bot${BOT_TOKEN}`)
 
   const server = express()
 
   server.use(bodyParser.json())
 
-  server.post("/bot" + BOT_TOKEN, (req, res) => {
+  server.post("/bot" + BOT_TOKEN, async (req, res) => {
+    console.log(req.body)
     bot.processUpdate(req.body)
-    res.sendStatus(200)
+    await res.sendStatus(200)
+  })
+
+  server.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`)
   })
 }
 
