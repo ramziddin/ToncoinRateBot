@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
+    "rootDir": "./src",
     "outDir": "./build",
     "target": "ES2021",
     "module": "CommonJS",
     "lib": ["ES2021"],
+    "resolveJsonModule": true,
     "sourceMap": false,
     "strict": true,
     "noImplicitAny": true,
@@ -11,5 +13,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
-  }
+  },
+  "include": ["./src/**/*.ts"],
+  "files": ["./src/locales/ENGLISH.json", "./src/locales/RUSSIAN.json"]
 }
