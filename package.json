@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node build/index",
     "dev": "nodemon src/index.ts",
-    "build": "tsc"
+    "build": "npx prisma migrate deploy && tsc"
   },
   "keywords": [],
   "author": "",
